@@ -1,0 +1,39 @@
+.sidebar li a{
+    font-size: 16px !important;
+    text-transform: uppercase !important;
+    text-indent: 4px !important;
+    letter-spacing: 0.214em !important;
+    overflow-wrap: break-word !important;
+    color: rgb(27, 27, 27) !important;
+}
+
+.sidebar li.active a, .sidebar li.active a:hover{
+    font-weight: 700;
+    font-size: 16px !important;
+    text-transform: uppercase !important;
+    text-indent: 4px !important;
+    letter-spacing: 0.214em !important;
+    overflow-wrap: break-word !important;
+    color: rgb(27, 27, 27) !important;
+}
+
+#side_nav{
+    background: #fff;
+    min-width: 100%;
+    max-width: 100%;
+    min-height: 100vh;
+    transition: all .5s;
+}
+
+@media (max-width: 991.98px) {
+    #side_nav{
+        margin-left: -999px;
+        position: fixed;
+        min-height: 100vh;
+        z-index: 1;
+    }
+
+    #side_nav.active{
+        margin-left: 0;
+    }
+}
