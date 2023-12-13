@@ -1,205 +1,195 @@
 <?php
 include 'includes/autoload.inc.php';
 
+if($_SERVER['REQUEST_METHOD'] == "GET"){
+	if(isset($_GET['view_id'])){
+		$view_id = secured($_GET['view_id']);
 
-if(!empty($_REQUEST['editid'])){
-  $value = secured($_REQUEST['editid']);
+		$fetch_user = new fetch();
+		$res_fetch_user = $fetch_user->fetchUserAcc($view_id);
 
-  $fetch_admin = new fetch();
-  $res = $fetch_admin->viewUser($value);
+		if($res_fetch_user->rowCount()==1){
+			$fetch_user = $res_fetch_user->fetch();
+			$acc_type = $fetch_user['acc_type'];
 
-  if($res){
-    $row = $res->fetch();
-    $profile_img = $row['acc_profile'];
-    $fname = $row['acc_fname'];
-    $mname = $row['acc_mname'];
-    $lname = $row['acc_lname'];
-    $birthdate = $row['acc_birth'];
-    $org = $row['acc_org'];
-    $phone = $row['acc_phone'];
-    $email = $row['acc_email'];
-    $uname = $row['acc_uname'];
-    $acc_id = $row['acc_admin_id'];
-  }
+			$acc_profile= $fetch_user['acc_profile'];
+			$acc_lname= $fetch_user['acc_lname'];
+			$acc_fname= $fetch_user['acc_fname'];
+			$acc_mname= $fetch_user['acc_mname'];
+			$acc_birth= $fetch_user['acc_birth'];
+			$acc_birth_place= $fetch_user['acc_birth_place'];
+			$acc_complete_add= $fetch_user['acc_complete_add'];
+			$acc_brgy= $fetch_user['acc_brgy'];
+			$acc_martial_status= $fetch_user['acc_martial_status'];
+			$acc_education= $fetch_user['acc_education'];
+			$acc_education_highest= $fetch_user['acc_education_highest'];
+			$acc_eco_status= $fetch_user['acc_eco_status'];
+			$acc_eco_status_others= $fetch_user['acc_eco_status_other'];
+			$acc_contact= $fetch_user['acc_contact'];
+			$acc_religion= $fetch_user['acc_religion'];
+			$acc_email= $fetch_user['acc_email'];
+			$acc_uname= $fetch_user['acc_uname'];
+
+		}else{
+			ob_end_flush(header("Location: index.php"));
+		}
+	}
+}else{
+	return false;
 }
 
+unset($_SESSION['page_title']);
+$_SESSION['page_title'] ="View User";
+
+include 'includes/header.php';
+
 ?>
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-   
-    <title>HWFC  Management System|| Veiw User</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="vendors/simple-line-icons/css/simple-line-icons.css">
-    <link rel="stylesheet" href="vendors/flag-icon-css/css/flag-icon.min.css">
-    <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <link rel="stylesheet" href="vendors/select2/select2.min.css">
-    <link rel="stylesheet" href="vendors/select2-bootstrap-theme/select2-bootstrap.min.css">
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="css/style.css" />
-    
-  </head>
-  <body>
-    <div class="container-scroller">
-      <!-- partial:partials/_navbar.html -->
-     <?php include_once('includes/header.php');?>
-      <!-- partial -->
-      <div class="container-fluid page-body-wrapper">
-        <!-- partial:partials/_sidebar.html -->
-      <?php include_once('includes/sidebar.php');?>
-        <!-- partial -->
-        <div class="main-panel">
-          <div class="content-wrapper">
-            <div class="page-header">
-              <h3 class="page-title"> View User </h3>
-              <nav aria-label="breadcrumb">
-                <ol class="breadcrumb">
-                  <li class="breadcrumb-item"><a href="dashboard.php">Dashboard</a></li>
-                  <li class="breadcrumb-item active" aria-current="page"> View User</li>
-                </ol>
-              </nav>
-            </div>
-            <div class="row">
-          
-              <div class="col-12 grid-margin stretch-card">
-                <div class="card">
-                  <div class="card-body">
-                    <h4 class="card-title" style="text-align: center;">View User</h4>
-                   
-                    <form class="forms-sample" action="inputConfig.php" method="post" enctype="multipart/form-data">
-                    <?php
-                      if(!empty($profile_img)){
-                        ?>
-                        <input type="hidden" name="user_id" value="<?=$_REQUEST['editid']?>">
-                        <div class="form-goup text-center">
-                          <img src="../uploads/<?=$profile_img?>" alt="" width="250" height="250">
-                        </div>
-                        <?php
-                      }
-                    ?>
-                    <?php 
-                    if(!!empty($profile_img))
-                    {
-                     ?>
-                        <div class="form-group">
-                            <label for="">User Photo</label>
-                            <input type="file" name="profile_img" accept=".jpg, .png, .jpeg" class="form-control">
-                        </div>
-                     <?php
-                    }
-                    ?>
-                      <div class="form-group">
-                        <label for="">User First Name</label>
-                        <input type="text" name="fname" class="form-control" value="<?=$fname?>" <?php if(!empty($fname)){echo"disabled";}?> required='true'>
-                      </div>
-                      <div class="form-group">
-                        <label for="">User Middle Name</label>
-                        <input type="text" name="mname" value="<?=$mname?>" <?php if(!empty($mname)){echo"disabled";}else{?>placeholder="Optional"<?php }?> class="form-control">
-                      </div>
-                      <div class="form-group">
-                        <label for="">User Last Name</label>
-                        <input type="text" name="lname" class="form-control" value="<?=$lname?>" <?php if(!empty($lname)){echo"disabled";}?> required='true'>
-                      </div>
-                      <div class="form-group">
-                        <label for="">Date of Birth</label>
-                        <input type="date" name="birthdate" value="<?=$birthdate?>" <?php if(!empty($birthdate)){echo"disabled";}?> class="form-control" required='true'>
-                      </div>
-                      <div class="form-group">
-                        <label for="">Organization</label>
-                        <input type="text" name="phone" class="form-control" required='true' value="<?=$org?>" disabled maxlength="10" pattern="[0-9]+">
-                      </div> 
-                      <div class="form-group">
-                        <label for="">Contact Number</label>
-                        <input type="text" name="phone" class="form-control" required='true' value="<?=$phone?>" disabled maxlength="10" pattern="[0-9]+">
-                      </div>          
-                      <div class="form-group">
-                        <label for="">User Email</label>
-                        <input type="text" name="email" class="form-control" placeholder="example@asd.com" value="<?=$email?>" <?php if(!empty($email)){echo"disabled";}?>  required='true'>
-                      </div>
-                      <h3>Login details</h3>
-                      <div class="form-group">
-                        <label for="">User Name</label>
-                        <input type="text" name="uname"value="<?=$uname?>" <?php if(!empty($uname)){echo"disabled";}?>  class="form-control" required='true'>
-                      </div>
-                      <h3>Barangay (City)</h3>
-                      <div class="form-group">
-                          <div class="py-2">
-                              <ul class="list-group">
-                                <?php
-                              $fetch_brgy_serv = new fetch();
-                              $res_serv_brgy = $fetch_brgy_serv->fetchBrgyServ($acc_id);
+<main>
+	<div class="container-fluid px-4">
+		<h1 class="mt-4">View User</h1>
+    	<br>
+		<form action="inputConfig.php" method="POST" enctype="multipart/form-data">
+			<input type="hidden" name="function" value="create_admin">
+			<div class="row">
+	        	<div class="col-xl-4 col-lg-4 col-12 pb-xl-0 pb-lg-0 pb-4">
+	        		<div class="text-center py-2">
+	        			<img src="../uploads/<?=$acc_profile;?>" id="output" width="250" height="250">
+	        		</div>
+	        	</div>
+	        	<div class="col-xl-8 col-lg-8 col-12">
+			        <div class="card mb-4 shadow">
+			            <div class="card-header">
+			              View User
+			            </div>
+			            <div class="card-body">
+		                    <h5>Personal Information <span class="text-danger">*</span></h5>
+		                    <div class="row mb-3">
+		                        <div class="col-md-4">
+		                            <div class="form-floating mb-3 mb-md-0">
+		                                <input class="form-control" id="inputFirstName" name="acc_lname" type="text" placeholder="Enter your first name" value="<?=$acc_lname?>" <?php if(!empty($acc_lname)){echo"disabled";}?> required />
+		                                <label for="inputFirstName">Last name</label>
+		                            </div>
+		                        </div>
+		                        <div class="col-md-4">
+		                            <div class="form-floating mb-3 mb-md-0">
+		                                <input class="form-control" id="inputFirstName" name="acc_fname" type="text" placeholder="Enter your first name" value="<?=$acc_fname?>" <?php if(!empty($acc_fname)){echo"disabled";}?> required />
+		                                <label for="inputFirstName">First name</label>
+		                            </div>
+		                        </div>
+		                        <div class="col-md-4">
+		                            <div class="form-floating mb-3 mb-md-0">
+		                                <input class="form-control" id="inputLastName" name="acc_mname" type="text" placeholder="Enter your last name" value="<?=$acc_mname?>" <?php if(!empty($acc_mname)){echo"disabled";}?> required />
+		                                <label for="inputLastName">Middle name</label>
+		                            </div>
+		                        </div>
+		                    </div>                            
+		                    <div class="row mb-3">
+		                        <div class="col-md-4">
+		                            <div class="form-floating mb-3 mb-md-0">
+		                                <input class="form-control" id="inputBirthDate" name="acc_birth" type="date" placeholder="Enter your Birthdate" value="<?=$acc_birth?>" <?php if(!empty($acc_birth)){echo"disabled";}?> required />
+		                                <label for="inputBirthDate">Birthdate</label>
+		                            </div>
+		                        </div>
+		                        <div class="col-md-8">
+		                            <div class="form-floating mb-3 mb-md-0">
+		                                <input class="form-control" id="inputBirthplace" name="acc_birth_place" type="text" placeholder="Enter your birth place" value="<?=$acc_birth_place?>" <?php if(!empty($acc_birth_place)){echo"disabled";}?> required />
+		                                <label for="inputBirthplace">Birth Place</label>
+		                            </div>
+		                        </div>
+		                    </div>
+		                    <div class="row mb-3">
+		                        <div class="col-md-6">
+		                            <div class="form-floating mb-3">
+		                                <select class="form-select" id="selectMartialStatus" name="acc_martial_status" disabled required>
+                                			<option value="" selected disabled><?=$acc_martial_status?></option>
+		                                </select>
+		                                <label for="selectMartialStatus">Martial Status</label>
+		                            </div>
+		                        </div>
+		                        <div class="col-md-6">
+		                            <div class="form-floating mb-3">
+		                                <input type="text" name="acc_religion" class="form-control" id="inputReligion" placeholder="Enter your religion" value="<?=$acc_religion?>" disabled required />
+		                                <label for="inputReligion">Religion</label>
+		                            </div>
+		                        </div>
+		                    </div>
+		                    <i class="fs-6"><u>Residence Address</u></i>
+		                    <div class="row mb-3 pt-2">
+		                    	<div class="col-md-6">
+		                        	<div class="form-floating mb-3 mb-md-0">
+		                                <input class="form-control" id="inputStreet" name="acc_complete_add" type="text" placeholder="Enter your first name" value="<?=$acc_complete_add?>" disabled required />
+		                                <label for="inputStreet">House No. / Purok / Street</label>
+		                            </div>
+		                        </div>
+		                        <div class="col-md-6">
+		                            <div class="form-floating mb-3 mb-md-0">
+		                                <select class="form-select" id="selectBrgy" name="acc_brgy" disabled required />
+                                			<option value="" selected disabled><?=$acc_brgy?></option>
+		                                </select>
+		                                <label for="selectBrgy">Barangay</label>
+		                            </div>
+		                        </div>
+		                    </div>
+		                    <i class="fs-6"><u>Educational Attainment</u></i>
+		                    <div class="form-floating mb-3 pt-2">
+		                        <select class="form-select" id="selectEducationHighest" name="acc_education_highest" disabled required>
+                        			<option value="" selected disabled><?=$acc_education_highest?></option>
+		                        </select>
+		                        <label for="selectEducationHighest">Education (highest degree completed)</label>
+		                    </div>
+		                    <div class="form-floating mb-3">
+		                        <input class="form-control" id="inputEducation" type="text" name="acc_education" placeholder="Enter Highest Educational Attainment"  value="<?=$acc_education_highest?>" disabled equired />
+		                        <label for="inputEducation">What is the name of latest school that you have completed?</label>
+		                    </div>
 
-                              if($res_serv_brgy->rowCount()>0){
-                                while ($row_serv_brgy = $res_serv_brgy->fetch()) {
-                                  ?>
-                                      <li class="list-group-item"><?=$row_serv_brgy['ser_name']?> (<?=$row_serv_brgy['ser_date']?>)</li>
-                                  <?php
-                                }
-                              }else{
-                                ?>
-                                    <li class="list-group-item">No Data Found</li>
-                                <?php
-                              }
-                            ?>
-                              </ul>
-                          </div>
-                      </div>
-                      <?php
-                          if(empty($uname)){
-                            ?>
-                          <div class="form-group">
-                            <label for="">Password</label>
-                            <input type="Password" name="password" class="form-control" required='true'>
-                          </div>
-                            <?php
-                          }
+		                    <i class="fs-6"><u>Occupation</u></i>
+		                    <div class="row  mb-3 pt-2">
+		                        <div class="col-md-6">
+		                            <div class="form-floating mb-3">
+		                                <select class="form-select" id="acc_eco_status" name="acc_eco_status" disabled required>
+                                				<option value="" selected disabled><?=$acc_eco_status?></option>
+				                        </select>
+				                        <label for="acc_eco_status">Economics Status</label>
+		                            </div>
+		                        </div>
+		                         
+		                        <div class="col-md-6">
+		                            <div class="form-floating mb-3">
+		                                <input type="text" name="acc_eco_status_others" class="form-control" id="inputOccupation" placeholder="Enter your occputation" value="<?=$acc_eco_status_others?>" disabled required/>
+		                                <label for="inputOccupation"><small>If you not select others answer "N/A"</small></label>
+		                            </div>
+		                        </div>
+		                    </div>
 
-                          if(!empty($_REQUEST['editid'])){
-                            ?>
-                                <a href="manage-user.php" class="btn btn-success mr-2">Back</a>
-                            <?php
-                          }else{
-                            ?>
-                                <button type="submit" class="btn btn-primary mr-2" name="add_admin">Add</button>
-                            
-                            <?php
-                          }
-                        ?>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <!-- content-wrapper ends -->
-          <!-- partial:partials/_footer.html -->
-         <?php include_once('includes/footer.php');?>
-          <!-- partial -->
-        </div>
-        <!-- main-panel ends -->
-      </div>
-      <!-- page-body-wrapper ends -->
+		                    <i class="fs-6"><u>Contact Details</u></i>
+		                    <div class="row  mb-3 pt-2">
+		                        <div class="col-md-6">
+		                            <div class="form-floating mb-3">
+		                                <input type="text" name="acc_contact" class="form-control" id="inputContact" placeholder="Enter your contact number" value="<?=$acc_contact?>" disabled required />
+		                                <label for="inputContact">Contact Number</label>
+		                            </div>
+		                        </div>
+		                        <div class="col-md-6">
+		                        	<div class="form-floating mb-3">
+				                        <input class="form-control" name="acc_email" id="inputEmail" type="email" placeholder="name@example.com" value="<?=$acc_email?>" disabled required />
+				                        <label for="inputEmail">Email address</label>
+				                    </div>
+		                        </div>
+		                    </div>
+		                    
+		                    <div class="mt-4 mb-0">
+		                        <div class="d-grid">
+            						<a href="<?=$_SERVER['HTTP_REFERER']?>" type="submit" class="btn btn-success btn-block"  name="create_admin">Back</a>
+		                        </div>
+		                    </div>
+			    		</div>
+			    	</div>
+	        	</div>
+			</div>
+    	</form>
     </div>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="vendors/js/vendor.bundle.base.js"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <script src="vendors/select2/select2.min.js"></script>
-    <script src="vendors/typeahead.js/typeahead.bundle.min.js"></script>
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="js/off-canvas.js"></script>
-    <script src="js/misc.js"></script>
-    <!-- endinject -->
-    <!-- Custom js for this page -->
-    <script src="js/typeahead.js"></script>
-    <script src="js/select2.js"></script>
-    <!-- End custom js for this page -->
-  </body>
-</html>
+</main>
+
+<?php
+include 'includes/footer.php';
+?>

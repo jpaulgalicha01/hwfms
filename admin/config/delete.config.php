@@ -1,30 +1,19 @@
 <?php
+
 class delete extends controller{
-    public function deleteOrg($value){
-        $stmt = $this->delete_org($value);
-        return $stmt;
-    }
 
-    public function deleteUser($value){
-        $stmt = $this->delete_user($value);
-        return $stmt;
-    }
-    public function deleteNotice($value){
-        $stmt = $this->delete_notice($value);
-        return $stmt;
-    }
-    public function deleteAppointment($value){
-        $stmt = $this->delete_appointment($value);
-        return $stmt;
-    }
+	public function deleteAnnouncement($announce_id){
 
-    public function deleteMem($delete_mem_org){
-        $stmt = $this->delete_mem($delete_mem_org);
-        return $stmt;
-    }
-    public function deletePreReg($value){
-        $stmt = $this->delete_pre_reg($value);
-        return $stmt;
-    }
+		$stmt = $this->delete_announcement($announce_id);
+		if($stmt == 1){
+			$_SESSION['message'] = "Successfully deleted data.";
+			$_SESSION['message_color'] = "success";
+			ob_end_flush(header("Location: ".$_SERVER['HTTP_REFERER'].""));
+		}
+
+		$_SESSION['message'] = "There's something wrong. Please try again";
+		$_SESSION['message_color'] = "danger";
+		ob_end_flush(header("Location: ".$_SERVER['HTTP_REFERER'].""));
+	}
+
 }
-?>

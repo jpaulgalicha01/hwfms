@@ -1,20 +1,18 @@
 <?php
-include 'include/autoload.inc.php';
 
-if(isset($_POST['pre_reg']) && $_POST['function'] == "pre_reg"){
-    $pre_name = secured($_POST['pre_name']);
-    $pre_reg_post = secured($_POST['pre_reg_post']);
+include 'includes/autoload.inc.php';
 
-    $pre_reg = new insert();
-    $pre_reg->pre_reg($pre_name,$pre_reg_post);
-}elseif(isset($_POST['withdraw_candi']) && $_POST['function'] == "withdraw_candi"){
-    $election_year = secured($_POST['election_year']);
-    $election_status = secured($_POST['election_status']);
+if($_SERVER['REQUEST_METHOD'] == "POST"){
+	if(isset($_POST['change_profile']) && secured($_POST['function']) == "change_profile"){
 
-    $withdrawal_candi = new delete();
-    $withdrawal_candi->withdrawalCandi($election_year,$election_status);
+		$change_img = $_FILES['change_img']['name'];
 
-}else{
-    header("Location: index.php");
+		$change_profile = new update();
+		$change_profile->changeProfile($change_img);
+
+	}else{
+		ob_end_flush(header("Location: index.php"));
+	}
+}else{	
+	return false;
 }
-?>

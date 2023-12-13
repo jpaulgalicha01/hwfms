@@ -1,61 +1,39 @@
 <?php
+
 include 'includes/autoload.inc.php';
 
-if(isset($_POST['user_login']) && $_POST['function']=="user_login" ){
-$uname = secured($_POST['uname']);
-$pass = secured($_POST['pass']);
+if($_SERVER['REQUEST_METHOD']=="POST"){
+	if(isset($_POST['acc_login']) && secured($_POST['function'])=="acc_login"){
+		$acc_uname = secured($_POST['acc_uname']);
+		$acc_pass = secured($_POST['acc_pass']);
 
-$check = new fetch();
-$check->loggin($uname,$pass);
-}elseif(isset($_POST['create_user']) && secured($_POST['function'] == "create_user")){
-    $profile_img = $_FILES['profile_img']['name'];
-    $fname = secured($_POST['fname']);
-    $mname = secured($_POST['mname']);
-    $lname = secured($_POST['lname']);
-    $email = secured($_POST['email']);
-    $phone = secured($_POST['phone']);
-    $birthdate = secured($_POST['birth']);
-    $address = secured($_POST['address']);
-    $org = secured($_POST['org']);
-    $uname = secured($_POST['uname']);
-    $password = secured($_POST['password']);
+		$login_acc = new fetch();
+		$login_acc->accLogin($acc_uname,$acc_pass);
+	}elseif (isset($_POST['create_user']) && secured($_POST['function']) == "create_user") {
+		$acc_profile = $_FILES['acc_profile']['name'];
+		$acc_lname = secured($_POST['acc_lname']);
+		$acc_fname = secured($_POST['acc_fname']);
+		$acc_mname = secured($_POST['acc_mname']);
+		$acc_birth = secured($_POST['acc_birth']);
+		$acc_birth_place = secured($_POST['acc_birth_place']);
+		$acc_complete_add = secured($_POST['acc_complete_add']);
+		$acc_brgy = secured($_POST['acc_brgy']);
+		$acc_martial_status = secured($_POST['acc_martial_status']);
+		$acc_education = secured($_POST['acc_education']);
+		$acc_education_highest = secured($_POST['acc_education_highest']);
+		$acc_eco_status = secured($_POST['acc_eco_status']);
+		$acc_eco_status_others = secured($_POST['acc_eco_status_others']);
+		$acc_contact = secured($_POST['acc_contact']);
+		$acc_religion = secured($_POST['acc_religion']);
+		$acc_email = secured($_POST['acc_email']);
+		$acc_uname = secured($_POST['acc_uname']);
+		$acc_pass = secured($_POST['acc_pass']);
 
-    $create_user = new insert();
-    $create_user->addData($profile_img,$fname,$mname,$lname,$email,$phone,$birthdate,$address,$org,$uname,$password);
-}elseif(isset($_POST['value']) && $_POST['function']=="fetch_org" ){
-    $value = secured($_POST['value']);
-
-    $fetch_org = new fetch();
-    $res = $fetch_org->fetchOrg($value);
-
-    if($res){
-        while($row=$res->fetch()){
-            echo"<option>".$row['org_name']."</option>";
-        }
-    }else{
-        echo"<option value=''selected disabled>--- NO DATA FOUND ---</option>";
-    }
-
-}elseif(isset($_POST["res_pass"]) && $_POST['function'] == "reset_pass"){
-   $email_add = secured($_POST['email_add']);
-
-    $reset_email = new fetch();
-    $reset_email->resetEmail($email_add);
-}elseif(isset($_POST['verify_otp_code']) && $_POST['function']=="verify_otp" ){
-    $acc_id = secured($_POST['acc_id']);
-    $otp_code = secured($_POST['otp_code']);
-
-    $verify_otp = new fetch();
-    $verify_otp->verifyOtp($acc_id,$otp_code);
-
-}elseif(isset($_POST['change_pass']) && $_POST['function']=="change_pass" ){
-    $acc_id = secured($_POST['acc_id']);
-    $npass = secured($_POST['npass']);
-
-    $change_pass = new update();
-    $change_pass->changePass($acc_id,$npass);
-}else{
-    header("Location: index.php");
+		$create_admin = new insert();
+		$create_admin->createAdmin($acc_profile, $acc_lname, $acc_fname, $acc_mname, $acc_birth, $acc_birth_place, $acc_complete_add, $acc_brgy, $acc_martial_status, $acc_education,$acc_education_highest, $acc_eco_status, $acc_eco_status_others, $acc_contact, $acc_religion, $acc_email, $acc_uname,$acc_pass);
+	}
+	else{
+		ob_end_flush(header("Location: index.php"));
+	}
 }
-
-?>
+return false;

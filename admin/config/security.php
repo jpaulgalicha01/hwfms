@@ -1,21 +1,23 @@
 <?php
+ob_start();
 session_start();
+
 function secured($data){
-    $data = trim($data);
-    $data = stripslashes($data);
-    $data = htmlspecialchars($data);
-    $data = str_replace("'", "\'", $data);
-    return $data;
-  }
-
-if(!isset($_SESSION['user_id'])){
-    header("Location: ../index.php");
+	$data = htmlspecialchars($data);
+	$data = stripslashes($data);
+	$data = trim($data);
+	$data = str_replace("'", "\'", $data);
+	return $data;
 }
 
-if(isset($_SESSION['user_id']) && $_SESSION['user_type']=="admin"){
-    header("Location: ../super-admin/index.php");
+if(!isset($_COOKIE['user_id']) || !isset($_COOKIE['user_type'])){
+	ob_end_flush(header("Location: ../index.php"));
 }
-elseif(isset($_SESSION['user_id']) && $_SESSION['user_type']=="user"){
-    header("Location: ../user/index.php");
+
+if(isset($_COOKIE['user_id']) && $_COOKIE['user_type'] == "super-admin"){
+	ob_end_flush(header("Location: ../super-admin/index.php"));
 }
-?>
+
+if(isset($_COOKIE['user_id']) && $_COOKIE['user_type'] == "user"){
+	ob_end_flush(header("Location: ../user/index.php"));
+}

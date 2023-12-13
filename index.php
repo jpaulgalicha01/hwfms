@@ -1,114 +1,71 @@
 <?php
 include 'includes/autoload.inc.php';
+include 'includes/header.php';
 ?>
-
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-  
-    <title>HWFMS || Login Page</title>
-    <!-- plugins:css -->
-    <link rel="stylesheet" href="vendors/simple-line-icons/css/simple-line-icons.css">
-    <link rel="stylesheet" href="vendors/flag-icon-css/css/flag-icon.min.css">
-    <link rel="stylesheet" href="vendors/css/vendor.bundle.base.css">
-    <script src="js/sweetalert.min.js"></script>
-
-    <!-- endinject -->
-    <!-- Plugin css for this page -->
-    <!-- End plugin css for this page -->
-    <!-- inject:css -->
-    <!-- endinject -->
-    <!-- Layout styles -->
-    <link rel="stylesheet" href="css/style.css">
-    <style type="text/css">
-      .bg-img{
-            background-image: url("images/Banner.jpg");
-            background-repeat: no-repeat;
-            background-attachment: fixed;
-            background-size: 100% 100%;
-      }
-    </style>
-  </head>
-  <body> 
-    <div class="container-scroller">
-      <div class="container-fluid page-body-wrapper full-page-wrapper">
-        <div class="content-wrapper d-flex align-items-center auth justify-content-center bg-img">
-          <div class="row flex-grow">
-            <div class="col-lg-4 mx-auto">
-              <div class="auth-form-light text-left p-5">
-                <div class="brand-logo text-center">
-                  <a href="index.php">
-                    <img src="images/hwfms-logo.png" style="width: 70px;">
-                  </a>
-                </div>
-                <h4 class="text-center py-2">Hinigiran Womens Federation Management System</h4>
-                <h6 class="font-weight-light">Sign in to continue.</h6>
-                <form class="pt-3" method="post" action="inputConfig.php">
-                  <input type="hidden" name="function" value="user_login">
-                  <div class="form-group">
-                    <input type="text" class="form-control form-control-lg" placeholder="Enter your username" required="true" name="uname" >
-                  </div>
-                  <div class="form-group">
-                    <input type="password" class="form-control form-control-lg" placeholder="Enter your password" name="pass" id="pass">
-                  </div>
-                  <div class="mt-3">
-                    <input name="user_login" type="submit" value="Login" class="btn btn-success btn-block loginbtn">
-                  </div>
-                  <div class="my-2 d-flex justify-content-between align-items-center">
-                    <div class="form-check">
-                      <label class="form-check-label text-muted">
-                        <input type="checkbox" id="showpass" class="form-check-input"/>Show Password </label>
+<main>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-5 mt-5">
+                <a href="index.php">
+                    <img src="images/hwfms-logo.png" width="80" height="80" class="position-absolute top-0 start-50 translate-middle-x mt-5" style="z-index:1">
+                </a>
+                <div class="card shadow-lg border-0 rounded-lg">
+                    <div class="card-header"><h3 class="text-center font-weight-light my-4">HWFMS</h3></div>
+                    <div class="card-body">
+                        <?php
+                            if(isset($_SESSION['message'])){
+                                ?>
+                                    <div class="alert alert-<?= $_SESSION['message_color']?> alert-dismissible fade show mb-2 pb-1" role="alert">
+                                      <p><?= $_SESSION['message']?></p>
+                                    </div>
+                                <?php
+                                unset($_SESSION['message']);    
+                            }
+                        ?>
+                        
+                        <form action="inputConfig.php" method="POST">
+                            <input type="hidden" name="function" value="acc_login">
+                            <div class="form-floating mb-3">
+                                <input name="acc_uname" class="form-control" id="inputEmail" type="text" placeholder="Enter your username" required />
+                                <label for="inputEmail">Username</label>
+                            </div>
+                            <div class="form-floating mb-3">
+                                <input name="acc_pass" class="form-control" id="inputPassword" type="password" placeholder="Enter your password" required />
+                                <label for="inputPassword">Password</label>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" id="showPassword" type="checkbox" value="" />
+                                <label class="form-check-label" for="showPassword">Show Password</label>
+                            </div>
+                            <div class="d-flex align-items-center justify-content-between mt-4 mb-0">
+                                <a class="small text-dark" href="password.php">Forgot Password?</a>
+                                <button type="submit" class="btn btn-primary" name="acc_login">Login</button>
+                            </div>
+                        </form>
                     </div>
-                    <a href="forgot-password.php" class="auth-link text-black">Forgot password?</a>
-                  </div>
-                  <div class="mb-2">
-                    <a href="register.php" class="btn btn-block btn-facebook auth-form-btn">
-                      <i class="icon-social-home mr-2"></i>Create Account</a>
-                  </div>
-                  
-                </form>
-              </div>
+                    <div class="card-footer text-center py-3">
+                        <div class="small"><a href="register.php" class="text-dark">Need an account? Sign up!</a></div>
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-        <!-- content-wrapper ends -->
-      </div>
-      <!-- page-body-wrapper ends -->
     </div>
-    <?php
-      if (isset($_SESSION['decline'])) { ?>
-          <script>
-              swal({
-                  title: "<?php echo $_SESSION['title']?>",
-                  text: "<?php echo $_SESSION['decline']?>",
-                  icon: "<?php echo $_SESSION['icon']?>",
-                  button: "OK",
-              });
-              
-          </script>
-      <?php unset($_SESSION['decline']); }
-      ?>
-    <!-- container-scroller -->
-    <!-- plugins:js -->
-    <script src="vendors/js/vendor.bundle.base.js"></script>
-    <!-- endinject -->
-    <!-- Plugin js for this page -->
-    <!-- End plugin js for this page -->
-    <!-- inject:js -->
-    <script src="js/off-canvas.js"></script>
-    <script src="js/misc.js"></script>
-    <script>
-       function showpass(){
-        if(this.checked){
-            // alert("check");
-            document.getElementById('pass').setAttribute('type','text')
-        }
-        else{
-            // alert("ubcheck");
-            document.getElementById('pass').setAttribute('type','password')
-        }
+</main>
+<script type="text/javascript">
+function showPassword(){
+    if(this.checked){
+    // alert("check");
+    document.getElementById('inputPassword').setAttribute('type','text')
     }
-    document.getElementById('showpass').addEventListener('click' , showpass);
-    </script>
-  </body>
-</html>
+    else{
+    // alert("ubcheck");
+    document.getElementById('inputPassword').setAttribute('type','password')
+    }
+}
+document.getElementById('showPassword').addEventListener('click' , showPassword);
+</script>
+
+
+<?php
+include 'includes/footer.php';
+?>

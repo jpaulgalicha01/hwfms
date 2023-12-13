@@ -1,0 +1,35 @@
+html {
+  scroll-behavior: smooth;
+}
+.banner1{
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(../../images/Banner.jpg) !important; 
+    background-size:cover; 
+    min-height: 550px;
+}
+
+.nav-link{
+    color:white !important;
+}
+.nav-link:hover{
+    color: green !important;
+}
+hr.hr-custom{
+  border: 2px solid green;
+  border-radius: 5px;
+}
+
+hr.hr-custom2{
+    border: #188753 solid!important;
+    border-radius: 5px;
+}
+
+.text-white{
+    color: #DADBCD !important;
+}
+
+h1{
+    font-family: 'Montserrat', sans-serif;
+}
+p{
+    font-family: 'Montserrat', sans-serif;
+}

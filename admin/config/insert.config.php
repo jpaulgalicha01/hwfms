@@ -1,32 +1,26 @@
 <?php
+
 class insert extends controller{
-    public function addOrg($org_name,$org_date){
-        $stmt = $this->add_org($org_name,$org_date);
-    }
+	
+	public function insertAnnouncemnt($What,$When,$Who,$Where){
+		$stmt = $this->insert_announcemnt($What,$When,$Who,$Where);
+		if(!$stmt){
+			$_SESSION['message'] = "There's something wrong. Please try again";
+			$_SESSION['message_color'] = "danger";
+			ob_end_flush(header("Location: ".$_SERVER['HTTP_REFERER'].""));
 
-    public function addOrgMem($org_name, $org_pos, $org_mem_name){
-        $stmt = $this->add_org_mem($org_name, $org_pos, $org_mem_name);
-        return $stmt;
-    }
-    
-    public function addNotice($notice_org,$notice_title,$notice_date,$notice_message){
-        $stmt = $this->add_notice($notice_org,$notice_title,$notice_date,$notice_message);
-        return $stmt;
-    }
+		}
+		if($stmt !== 1){
+			$_SESSION['message'] = $stmt;
+			$_SESSION['message_color'] = "info";
+			ob_end_flush(header("Location: ".$_SERVER['HTTP_REFERER'].""));
 
-    public function addServices($notice_org,$notice_title,$notice_date,$notice_sponsor,$notice_message){
-        $stmt = $this->add_service($notice_org,$notice_title,$notice_date,$notice_sponsor,$notice_message);
-        return $stmt;
-    }
+		}
+		else{
+			$_SESSION['message'] = "Successfully insert data.";
+			$_SESSION['message_color'] = "success";
+			ob_end_flush(header("Location: ".$_SERVER['HTTP_REFERER'].""));
+		}
+	}
 
-    public function addServicesUser($service_name,$service_sponsor,$add_user_services,$date_get_ser){
-        $stmt = $this->add_services_user($service_name,$service_sponsor,$add_user_services,$date_get_ser);
-        return $stmt;
-    }
-
-    public function addPreElect($pre_elect_year,$pre_elect_starting,$pre_elect_end){
-        $stmt = $this->add_pre_elect($pre_elect_year,$pre_elect_starting,$pre_elect_end);
-        return $stmt;
-    }
 }
-?>

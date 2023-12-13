@@ -1,126 +1,60 @@
 <?php
 
-class controller extends db
-{
-    protected function login($uname, $pass)
-    {
-        $checkingInfo = $this->connect()->prepare("SELECT * FROM `tbl_accounts` WHERE acc_uname=? AND acc_password=? ");
-        $checkingInfo->execute([$uname,md5($pass)]);
+class controller extends db{
 
-        if($checkingInfo->rowCount()==1){
-            return $checkingInfo;
-        }else{
-            return false;
-        }
-    }
+	protected function fetch_brgy(){
+		$stmt = $this->connect()->query("SELECT * FROM `tbl_brgy` ");
+		return $stmt;
+	}
 
-    protected function acc_active($user_id){
-        $active_user = $this->connect()->prepare("UPDATE tbl_accounts SET acc_active=? WHERE acc_admin_id=?");
-        $active_user->execute(["Active",$user_id]);
+	protected function acc_login($acc_uname,$acc_pass){
+		$stmt = $this->connect()->prepare("SELECT * FROM `tbl_accounts` WHERE `acc_uname`=? AND `acc_password`=? ");
+		$stmt->execute([$acc_uname, md5($acc_pass)]);
+		return $stmt;
+	}
 
-        return $active_user;
-    }
+	protected function fetch_org($brgy_list){
+		$stmt = $this->connect()->prepare("SELECT * FROM `tbl_organization` WHERE `org_brgy`=? AND `org_status`=? OR `org_brgy`=? AND `org_status`=? ");
+		$stmt ->execute([$brgy_list,"Accept","All","Accept"]);
+		return $stmt;
+	}
 
-    protected function create_acount($profile_img, $fname, $mname, $lname, $email, $phone, $birthdate, $address,$org, $uname, $password)
-    {
-        $target_dir = "uploads/";
-        $target_file = $target_dir . basename($profile_img);
+	protected function create_admin($acc_profile, $acc_lname, $acc_fname, $acc_mname, $acc_birth, $acc_birth_place, $acc_complete_add, $acc_brgy, $acc_martial_status, $acc_education,$acc_education_highest, $acc_eco_status, $acc_eco_status_others, $acc_contact, $acc_religion, $acc_email, $acc_uname,$acc_pass){
+
+		// checking email if exist
+		$checking_email = $this->connect()->prepare("SELECT * FROM `tbl_accounts` WHERE `acc_email`=? ");
+		$checking_email->execute([$acc_email]);
+
+		if($checking_email->rowCount()>=1){
+			$status_message = "Email is already added.";
+			return $status_message;
+		}
+
+		// checking username if exist
+		$checking_uname = $this->connect()->prepare("SELECT * FROM `tbl_accounts` WHERE `acc_uname`=? ");
+		$checking_uname->execute([$acc_uname]);
+
+		if($checking_uname->rowCount()>=1){
+			$status_message = "Username is already added.";
+			return $status_message;
+		}
+
+		// Checking picture type
+		$target_dir = "uploads/";
+        $target_file = $target_dir . basename($acc_profile);
         $imageFileType = strtolower(pathinfo($target_file, PATHINFO_EXTENSION));
 
-        // Allow certain file formats
-        if ($imageFileType != "jpg" && $imageFileType != "png" && $imageFileType != "jpeg") {
-            ?>
-            <script>
-                window.alert("Please select format JPG,PNG,JPEG");
-                window.location.href = "register.php";
-            </script>
-            <?php
-        } else {
-            $stmt = "SELECT * FROM tbl_accounts WHERE acc_fname=? AND acc_mname=? AND acc_lname=? AND acc_email=? ";
-            $stmt_run = $this->connect()->prepare($stmt);
-            $stmt_run->execute([$fname,$mname,$lname,$email]);
-
-            if ($stmt_run->rowCount() == 1) {
-                ?>  
-                <script>
-                    alert("Already Added Data");
-                    window.location.href = "register.php";
-                </script>
-                <?php
-            } else {
-                $exist_uname = $this->connect()->prepare("SELECT * FROM `tbl_accounts` WHERE acc_email=? OR acc_uname=?");
-                $exist_uname->execute([$email,$uname]);
-
-                if($exist_uname->rowCount()>=1){
-                    ?>
-                        <script type="text/javascript">
-                            alert("Username / Email Address is Already Added");
-                            window.location.href="<?=$_SERVER['HTTP_REFERER']?>";
-                        </script>
-                    <?php
-                }else{
-                    $add_user = "INSERT INTO `tbl_accounts`(`acc_admin_id`, `acc_fname`, `acc_mname`, `acc_lname`, `acc_email`, `acc_phone`,  `acc_birth`, `acc_address`,`acc_org`, `acc_uname`, `acc_password`,`acc_profile`,`acc_type`,`acc_status`,`acc_check`) 
-                    VALUES ('" . rand() . "','$fname','$mname','$lname','$email','$phone','$birthdate','$address','$org','$uname','" . md5($password) . "','$profile_img','user','Pending','Not View')";
-                    $add_user_run = $this->connect()->query($add_user);
-
-                    if ($add_user_run) {
-                        move_uploaded_file($_FILES["profile_img"]["tmp_name"], $target_file);
-                        $_SESSION['decline'] = 'Please wait to accept your account by admin. Thank you!';
-                        $_SESSION['icon'] = 'info';
-                        $_SESSION['title'] = '';
-                        header('location: index.php');
-                    } else {
-                        ?>
-                        <script>
-                            alert("There's Something Wrong to Add Data");
-                            window.location.href = "register.php";
-                        </script>
-                        <?php
-                    }
-                }
-            }
+    	// Checking Image File Type
+        if($imageFileType !== "png" && $imageFileType !== "jpeg" && $imageFileType !=="jpg" ){
+			$status_message = "Please select jpg, jpeg and png image file type";
+			return $status_message;
         }
 
+        // Insert Data
+        $insert_acc = $this->connect()->prepare("INSERT INTO `tbl_accounts`(`acc_rand_id`, `acc_lname`, `acc_fname`, `acc_mname`, `acc_birth`, `acc_birth_place`, `acc_complete_add`, `acc_brgy`, `acc_martial_status`, `acc_education`, `acc_education_highest`, `acc_eco_status`, `acc_eco_status_other`, `acc_contact`, `acc_religion`, `acc_email`, `acc_profile`, `acc_uname`, `acc_password`,`acc_type`,`acc_status`) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");
+        $insert_acc->execute([rand(),$acc_lname,$acc_fname,$acc_mname,$acc_birth,$acc_birth_place,$acc_complete_add,$acc_brgy,$acc_martial_status,$acc_education,$acc_education_highest,$acc_eco_status,$acc_eco_status_others,$acc_contact,$acc_religion,$acc_email,$acc_profile,$acc_uname,md5($acc_uname),"user","Pending"]);
 
-    }
-
-    protected function fetch_org($value){
-        $stmt = $this->connect()->prepare("SELECT * FROM `tbl_organization` WHERE org_brgy=? AND org_status=? OR org_brgy=? AND org_status=? ");
-        $stmt->execute([$value,"Accept","All","Accept"]);
-
-        return $stmt;
-    }
-
-    protected function reset_email($email_add){
-        $this->connect()->query("UPDATE tbl_accounts SET acc_otp='".rand(111111,999999)."' WHERE acc_email='$email_add' ");
-        $stmt = $this->connect()->prepare(
-            "SELECT * FROM `tbl_accounts` WHERE acc_email=? "
-        );
-        $stmt->execute([$email_add]);
-        return $stmt;
-    }
-
-    protected function check_acc_id($acc_id,$otp_code){
-        $stmt = $this->connect()->prepare(
-            "SELECT * FROM `tbl_accounts` WHERE acc_admin_id=? AND acc_otp=?"
-        );
-        $stmt->execute([$acc_id,$otp_code]);
-
-        return $stmt;
-    }
-
-    protected function verify_otp($acc_id,$otp_code){
-        $stmt = $this->connect()->prepare("SELECT * FROM tbl_accounts WHERE acc_admin_id=? AND acc_otp=?");
-        $stmt->execute([$acc_id,$otp_code]);
-
-        return $stmt;
-    }
-
-    protected function change_pass($acc_id,$npass){
-        $stmt = $this->connect()->prepare("UPDATE `tbl_accounts` SET `acc_password`=?,`acc_otp`=? WHERE `acc_admin_id`=?");
-        $stmt->execute([md5($npass),NULL,$acc_id]);
-        
-        return $stmt;
-    }
+        move_uploaded_file($_FILES["acc_profile"]["tmp_name"], $target_file);
+        return 1;
+	}
 }
-?>
